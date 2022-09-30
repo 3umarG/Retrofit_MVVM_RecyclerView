@@ -11,9 +11,12 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class PostsViewModel(private val application : Application) : ViewModel() {
+class PostsViewModel(private val application: Application) : ViewModel() {
     private val _mutableLiveData = MutableLiveData<List<PostModel>>(listOf())
     var posts = _mutableLiveData as LiveData<List<PostModel>>
+
+    private val _sendMutableLiveData = MutableLiveData<PostModel?>()
+    var sendLiveData = _sendMutableLiveData
 
     private val call: Call<List<PostModel>> = PostRepository.getPosts()
     fun getPosts() {
@@ -22,15 +25,37 @@ class PostsViewModel(private val application : Application) : ViewModel() {
                 call: Call<List<PostModel>>,
                 response: Response<List<PostModel>>
             ) {
-                if (response.isSuccessful){
+                if (response.isSuccessful) {
                     _mutableLiveData.value = response.body() as List<PostModel>
-                }else {
-                    Toast.makeText(application.applicationContext,"404 ERROR !!",Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(
+                        application.applicationContext,
+                        "404 ERROR !!",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
 
             override fun onFailure(call: Call<List<PostModel>>, t: Throwable) {
                 _mutableLiveData.value = listOf()
+            }
+        })
+    }
+
+
+    fun sendPosts(map: Map<Any, Any>) {
+        val sendCall = PostRepository.sendPost(map)
+        sendCall.enqueue(object : Callback<PostModel> {
+            override fun onResponse(call: Call<PostModel>, response: Response<PostModel>) {
+                if (response.isSuccessful) {
+                    _sendMutableLiveData.value = response.body()
+                } else {
+                    _sendMutableLiveData.value = null
+                }
+            }
+
+            override fun onFailure(call: Call<PostModel>, t: Throwable) {
+                _sendMutableLiveData.value = null
             }
         })
     }

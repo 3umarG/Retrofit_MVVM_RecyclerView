@@ -8,5 +8,7 @@ class PostRepository private constructor() {
 
     companion object {
         fun getPosts(): Call<List<PostModel>> = PostClient.api.getPosts()
+
+        fun sendPost(map: Map<Any, Any>): Call<PostModel> = PostClient.api.sendPost(map)
     }
 }
