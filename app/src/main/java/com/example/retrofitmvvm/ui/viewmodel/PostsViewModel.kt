@@ -1,6 +1,7 @@
 package com.example.retrofitmvvm.ui.viewmodel
 
 import android.app.Application
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -49,6 +50,7 @@ class PostsViewModel(private val application: Application) : ViewModel() {
             override fun onResponse(call: Call<PostModel>, response: Response<PostModel>) {
                 if (response.isSuccessful) {
                     _sendMutableLiveData.value = response.body()
+                    Log.d("Headers",  response.headers().value(0))
                 } else {
                     _sendMutableLiveData.value = null
                 }
