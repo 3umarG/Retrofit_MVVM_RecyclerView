@@ -1,38 +1,21 @@
 package com.example.retrofitmvvm.data
 
 import com.example.retrofitmvvm.model.PostModel
+import com.example.retrofitmvvm.utils.Constants
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class PostClient private constructor() {
+object PostClient {
 
-
-    private var postInterface: PostInterface
-
-    init {
-        val retrofitBuilder = Retrofit.Builder()
-            .baseUrl(BASE_URL)
+    private val retrofitBuilder by lazy {
+        Retrofit.Builder()
+            .baseUrl(Constants.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-
-        postInterface = retrofitBuilder.create(PostInterface::class.java)
     }
 
-    companion object {
-        private const val BASE_URL = "https://jsonplaceholder.typicode.com/"
-        private var INSTANCE = PostClient()
-
-        fun getInstance(): PostClient {
-            return INSTANCE
-        }
+    val api: PostInterface by lazy {
+        retrofitBuilder.create(PostInterface::class.java)
     }
-
-
-
-    fun getPosts(): Call<List<PostModel>> {
-        return postInterface.getPosts()
-    }
-
-
 }
