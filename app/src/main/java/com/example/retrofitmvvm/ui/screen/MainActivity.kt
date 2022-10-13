@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +15,8 @@ import com.example.retrofitmvvm.repo.PostRepository
 import com.example.retrofitmvvm.ui.viewmodel.PostViewModelFactory
 import com.example.retrofitmvvm.ui.viewmodel.PostsViewModel
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.collect
 import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
@@ -68,15 +71,28 @@ class MainActivity : AppCompatActivity() {
             }
 
             job.join()
-            postsViewModel.posts.observe(
-                this@MainActivity
-            ) { posts ->
-                val rvAdapter = RVAdapter(posts!!)
-                recyclerView.adapter = rvAdapter
-                recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
-                recyclerView.visibility = View.VISIBLE
-                progressBar.visibility = View.INVISIBLE
+
+            val job2 = launch {
+                postsViewModel.postsFlow.buffer().collect { posts ->
+                    if (posts != listOf<PostModel>()) {
+                        val rvAdapter = RVAdapter(posts)
+                        recyclerView.adapter = rvAdapter
+                        recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
+                        recyclerView.visibility = View.VISIBLE
+                        progressBar.visibility = View.INVISIBLE
+                    }
+                }
             }
+
+//            postsViewModel.posts.observe(
+//                this@MainActivity
+//            ) { posts ->
+//                val rvAdapter = RVAdapter(posts!!)
+//                recyclerView.adapter = rvAdapter
+//                recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
+//                recyclerView.visibility = View.VISIBLE
+//                progressBar.visibility = View.INVISIBLE
+//            }
 
         }
 

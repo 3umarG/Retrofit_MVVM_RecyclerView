@@ -13,6 +13,9 @@ import com.example.retrofitmvvm.repo.PostRepository
 import com.example.retrofitmvvm.repo.PostRepository.Companion.getPosts
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Call
@@ -23,6 +26,9 @@ class PostsViewModel(private val application: Application ) : ViewModel() {
     private val _mutableLiveData = MutableLiveData<List<PostModel>>()
     var posts = _mutableLiveData as LiveData<List<PostModel>>
 
+    private val _stateFlow = MutableStateFlow<List<PostModel>>(listOf())
+    var postsFlow = _stateFlow as StateFlow<List<PostModel>>
+
     private val _sendMutableLiveData = MutableLiveData<PostModel?>()
     var sendLiveData = _sendMutableLiveData
 
@@ -30,7 +36,7 @@ class PostsViewModel(private val application: Application ) : ViewModel() {
         viewModelScope.launch {
             val response = async { PostRepository.getPosts() }
             if (response.await().isSuccessful) {
-                _mutableLiveData.value = response.await().body()
+               _stateFlow.emit(response.await().body()!!)
             }
         }
     }
