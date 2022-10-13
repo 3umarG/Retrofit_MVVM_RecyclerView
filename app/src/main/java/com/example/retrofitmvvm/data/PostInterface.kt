@@ -2,11 +2,12 @@ package com.example.retrofitmvvm.data
 
 import com.example.retrofitmvvm.model.PostModel
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.*
 
 interface PostInterface {
     @GET("posts")
-    fun getPosts(): Call<List<PostModel>>
+    suspend fun getPosts(): Response<List<PostModel>>
 
 
     @GET("posts/{id}")
