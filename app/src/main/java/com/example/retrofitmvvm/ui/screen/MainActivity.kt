@@ -72,15 +72,14 @@ class MainActivity : AppCompatActivity() {
 
             job.join()
 
-            val job2 = launch {
-                postsViewModel.postsFlow.buffer().collect { posts ->
-                    if (posts != listOf<PostModel>()) {
-                        val rvAdapter = RVAdapter(posts)
-                        recyclerView.adapter = rvAdapter
-                        recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
-                        recyclerView.visibility = View.VISIBLE
-                        progressBar.visibility = View.INVISIBLE
-                    }
+
+            postsViewModel.postsFlow.buffer().collect { posts ->
+                if (posts != listOf<PostModel>()) {
+                    val rvAdapter = RVAdapter(posts)
+                    recyclerView.adapter = rvAdapter
+                    recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
+                    recyclerView.visibility = View.VISIBLE
+                    progressBar.visibility = View.INVISIBLE
                 }
             }
 
